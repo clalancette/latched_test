@@ -15,6 +15,9 @@
 // limitations under the License.
 
 // C++ includes
+#include <chrono>
+#include <future>
+#include <thread>
 
 // ROS 2 includes
 #include <rclcpp/rclcpp.hpp>
@@ -27,10 +30,28 @@ namespace MMBO {
 
 LatchedPub::LatchedPub() : rclcpp::Node("latched_pub_node")
 {
+  future_ = exit_signal_.get_future();
+
+  test_pub_ =
+    this->create_publisher<std_msgs::msg::String>("/latched_test",
+                                                       rmw_qos_profile_default);
+
+  pub_thread_ = std::thread(&LatchedPub::publishThread, this, future_);
+}
+
+void LatchedPub::publishThread(std::shared_future<void> local_future)
+{
+  std::future_status status;
+
+  do {
+    status = local_future.wait_for(std::chrono::milliseconds(100));
+  } while (status == std::future_status::timeout);
 }
 
 LatchedPub::~LatchedPub()
 {
+  exit_signal_.set_value();
+  pub_thread_.join();
 }
 
 } // namespace MMBO

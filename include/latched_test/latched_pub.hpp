@@ -17,6 +17,8 @@
 #pragma once
 
 // C++ includes
+#include <future>
+#include <thread>
 
 // ROS 2 includes
 #include <rclcpp/rclcpp.hpp>
@@ -34,6 +36,13 @@ public:
   ~LatchedPub();
 
 private:
+  std::shared_future<void>                                                future_;
+  std::promise<void>                                                      exit_signal_;
+  std::thread                                                             pub_thread_;
+  void publishThread(std::shared_future<void> local_future);
+
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr test_pub_;
+
 };
 
 } // namespace MMBO
