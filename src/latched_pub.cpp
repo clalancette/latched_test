@@ -33,9 +33,12 @@ LatchedPub::LatchedPub() : rclcpp::Node("latched_pub_node")
 {
   future_ = exit_signal_.get_future();
 
+  rmw_qos_profile_t latched_qos = rmw_qos_profile_default;
+  latched_qos.depth = 1;
+  latched_qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+
   test_pub_ =
-    this->create_publisher<std_msgs::msg::String>("/latched_test",
-                                                       rmw_qos_profile_default);
+    this->create_publisher<std_msgs::msg::String>("/latched_test", latched_qos);
 
   pub_thread_ = std::thread(&LatchedPub::publishThread, this, future_);
 }
