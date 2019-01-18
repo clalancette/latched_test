@@ -27,8 +27,6 @@ int main(int argc, char const* argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto lift = std::make_shared<MMBO::LatchedPub>();
-
   rclcpp::spin(std::make_shared<MMBO::LatchedPub>());
 
   rclcpp::shutdown();

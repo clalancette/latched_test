@@ -17,6 +17,7 @@
 // C++ includes
 #include <chrono>
 #include <future>
+#include <memory>
 #include <thread>
 
 // ROS 2 includes
@@ -42,9 +43,14 @@ LatchedPub::LatchedPub() : rclcpp::Node("latched_pub_node")
 void LatchedPub::publishThread(std::shared_future<void> local_future)
 {
   std::future_status status;
+  uint64_t count = 0;
 
   do {
+    auto string_msg = std::make_unique<std_msgs::msg::String>();
+    string_msg->data = "hello " + std::to_string(count);
+    test_pub_->publish(string_msg);
     status = local_future.wait_for(std::chrono::milliseconds(100));
+    count++;
   } while (status == std::future_status::timeout);
 }
 
