@@ -34,6 +34,9 @@ public:
   ~LatchedSub();
 
 private:
+  void recv(const std_msgs::msg::String::SharedPtr msg);
+
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr                  test_sub_;
 };
 
 } // namespace MMBO

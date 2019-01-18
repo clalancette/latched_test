@@ -27,6 +27,13 @@ namespace MMBO {
 
 LatchedSub::LatchedSub() : rclcpp::Node("latched_sub_node")
 {
+  test_sub_ = this->create_subscription<std_msgs::msg::String>("/latched_test", std::bind(&LatchedSub::recv, this, std::placeholders::_1),
+                                                               rmw_qos_profile_default);
+}
+
+void LatchedSub::recv(const std_msgs::msg::String::SharedPtr msg)
+{
+  fprintf(stderr, "Saw msg '%s'\n", msg->data.c_str());
 }
 
 LatchedSub::~LatchedSub()
