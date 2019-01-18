@@ -48,10 +48,20 @@ void LatchedPub::publishThread(std::shared_future<void> local_future)
   std::future_status status;
   uint64_t count = 0;
 
+  auto string_msg = std::make_unique<std_msgs::msg::String>();
+  string_msg->data = "hello " + std::to_string(count);
+  test_pub_->publish(string_msg);
+
+  count++;
+
+  auto string_msg2 = std::make_unique<std_msgs::msg::String>();
+  string_msg2->data = "hello " + std::to_string(count);
+  test_pub_->publish(string_msg2);
+
   do {
-    auto string_msg = std::make_unique<std_msgs::msg::String>();
-    string_msg->data = "hello " + std::to_string(count);
-    test_pub_->publish(string_msg);
+    // auto string_msg = std::make_unique<std_msgs::msg::String>();
+    // string_msg->data = "hello " + std::to_string(count);
+    // test_pub_->publish(string_msg);
     status = local_future.wait_for(std::chrono::milliseconds(100));
     count++;
   } while (status == std::future_status::timeout);
